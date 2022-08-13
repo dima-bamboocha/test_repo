@@ -117,7 +117,22 @@ drop view if exists public.shipping_datamart;
 
 create view public.shipping_datamart  as (
 
---вставь сюда SQL-запрос
+select   t1.shippingid, 
+         t1.vendorid, 
+         st.transfer_type,
+         date_part('day', ss.shipping_end_fact_datetime - ss.shipping_start_fact_datetime) as full_day_at_shipping,
+         case when shipping_plan_datetime < ss.shipping_end_fact_datetime then 1 else 0 end as is_delay,
+         case when ss.status = 'finished' then 1 else 0 end as is_shipping_finish,
+         case when shipping_plan_datetime < ss.shipping_end_fact_datetime 
+              then date_part('day', ss.shipping_end_fact_datetime - shipping_plan_datetime) else 0 end as delay_day_at_shipping,
+         t1.payment_amount,
+         t1.payment_amount * (st.shipping_transfer_rate + sa.agreement_rate + scr.shipping_country_base_rate) as vat,
+         t1.payment_amount * sa.agreement_commission as profit
+from shipping_info as t1
+left join shipping_transfer as st on t1.transfer_type_id = st.id 
+left join shipping_status ss using (shippingid)
+left join shipping_agreement sa using (agreementid)
+left join shipping_country_rates scr on t1.shipping_country_id = scr.id
 
 );
 
