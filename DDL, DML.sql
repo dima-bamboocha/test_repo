@@ -111,12 +111,13 @@ left join ( --добавим поля со временем статуса "booc
 		from shipping
 		group by 1 ) as t2 using (shippingid);
 
--- 6. СОЗДАЁМ представление XXX (СПРАВОЧНИК)
+-- 6. СОЗДАЁМ представление для аналитики shipping_datamart
 
 drop view if exists public.shipping_datamart;
 
-create view public.XXX  as (
+create view public.shipping_datamart  as (
 
+--вставь сюда SQL-запрос
 
 );
 
